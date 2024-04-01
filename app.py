@@ -1,8 +1,11 @@
 from flask import Flask, jsonify, render_template, request
+from flask_bootstrap import Bootstrap
 from flask_cors import CORS, cross_origin
 from redis import Redis
 
 app = Flask(__name__)
+Bootstrap(app)
+
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 redis_client = Redis.from_url(
     "rediss://red-co56nt21hbls73cbphgg:"
@@ -82,4 +85,4 @@ def pop_user():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run('0.0.0.0', 8000, debug=True)
