@@ -1,4 +1,4 @@
-let base_url = 'http://0.0.0.0:8000/api'
+let base_url = 'https://queueappointment-2.onrender.com/api'
 // let results = ['Mark', 'Peter', 'Larry'];
 let $FirstLadyAddButton = $('#FirstLady>.input-group>.input-group-btn>.btn-success');
 let $StrategyAddButton = $('#Strategy>.input-group>.input-group-btn>.btn-success');
