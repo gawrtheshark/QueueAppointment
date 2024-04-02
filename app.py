@@ -8,8 +8,8 @@ Bootstrap(app)
 
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 redis_client = Redis.from_url(
-    "rediss://red-co56nt21hbls73cbphgg:"
-    "hi249uAlRv5DFpHa1EyyhxZAO88cBsB3@singapore-redis.render.com:6379"
+    "rediss://red-co56nt21hbls73cbphgg:hi249uAlRv5DFpHa1EyyhxZAO88cBsB3"
+    "@singapore-redis.render.com:6379"
 )
 
 
@@ -43,7 +43,7 @@ def user_exists(user) -> bool:
     return False
 
 
-@app.route('/add', methods=['POST'])
+@app.route('/api/add', methods=['GET'])
 def add_user():
     data: dict | None = request.json
     if not data:
@@ -66,7 +66,7 @@ def add_user():
     return None, 201
 
 
-@app.route('/all', methods=['GET'])
+@app.route('/api/all', methods=['GET'])
 def show_all_lists():
     all_lists = {}
     for key in Ministry.MINISTRY_KEYS:
@@ -74,7 +74,7 @@ def show_all_lists():
     return jsonify(all_lists), 200
 
 
-@app.route('/pop', methods=['DELETE'])
+@app.route('/api/pop', methods=['DELETE'])
 def pop_user():
     for key in Ministry.MINISTRY_KEYS:
         user = redis_client.lpop(key)
