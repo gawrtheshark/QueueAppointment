@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, jsonify, render_template, request
 from flask_bootstrap import Bootstrap
 from flask_cors import CORS, cross_origin
@@ -9,7 +11,8 @@ Bootstrap(app)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 redis_client = Redis.from_url(
     "rediss://red-co56nt21hbls73cbphgg:hi249uAlRv5DFpHa1EyyhxZAO88cBsB3"
-    "@singapore-redis.render.com:6379"
+    "@singapore-redis.render.com:6379",
+    decode_responses=True,
 )
 
 
@@ -43,15 +46,11 @@ def user_exists(user) -> bool:
     return False
 
 
-@app.route('/api/add', methods=['GET'])
+@app.route('/api/add', methods=['POST'])
 def add_user():
-    data: dict | None = request.json
-    if not data:
-        return jsonify({'error': 'Invalid body'}), 422
-
+    data: dict = json.loads(request.form.get('data'))
     user = data.get('user')
     ministry = data.get('ministry')
-
     if not (user and ministry):
         return jsonify({'error': 'User not provided'}), 400
 
@@ -63,7 +62,7 @@ def add_user():
 
     redis_client.rpush(ministry, user)
 
-    return None, 201
+    return {}, 201
 
 
 @app.route('/api/all', methods=['GET'])
@@ -74,14 +73,15 @@ def show_all_lists():
     return jsonify(all_lists), 200
 
 
-@app.route('/api/pop', methods=['DELETE'])
+@app.route('/api/pop', methods=['POST'])
 def pop_user():
-    for key in Ministry.MINISTRY_KEYS:
-        user = redis_client.lpop(key)
-        if user:
-            return jsonify({'message': f'User {user} popped from {key} queue'}), 200
-
-    return jsonify({'error': 'All ministry queues are empty'}), 400
+    data: dict = json.loads(request.form.get('data'))
+    ministry = data.get('ministry')
+    try:
+        redis_client.lpop(ministry)
+    except Exception as e:
+        print(e)
+    return {}, 200
 
 
 if __name__ == '__main__':
